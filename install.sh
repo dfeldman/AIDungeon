@@ -12,8 +12,8 @@ if [[ -d "${MODELS_DIRECTORY}/${MODEL_VERSION}" ]]; then
     echo "AIDungeon2 is already installed"
 else
     echo "Installing dependencies"
-    pip install -r requirements.txt > /dev/null
-    apt-get install aria2 unzip > /dev/null
+    pip install -r requirements.txt 
+    apt-get -y install aria2 unzip wget 
     
     echo "Downloading AIDungeon2 Model... (this may take a very, very long time)"
     mkdir -p "${MODELS_DIRECTORY}"
