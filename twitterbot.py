@@ -6,7 +6,8 @@ from story.story_manager import *
 from generator.gpt2.gpt2_generator import *
 from story.utils import *
 from termios import tcflush, TCIFLUSH
-import time, sys, os
+import time, sys, os, random
+from textwrap import wrap
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 
@@ -22,9 +23,24 @@ access_token_secret=os.environ["access_token_secret"]
 
 api = twitter.Api(consumer_key=consumer_key, consumer_secret=consumer_secret, access_token_key=access_token_key, access_token_secret=access_token_secret)
 
-def tweet(msg):
+
+LAST_TWEETID=0
+GAMEID=random.randint(0,10000)
+def post(msg):
+    if LAST_TWEETID==0:
+        status = api.PostUpdate(msg)
+    else:
+        status = api.PostUpdate(msg, in_reply_to_status_id=LAST_TWEETID)
+    LAST_TWEETID=status.id
+    return status
+
+def tweet(msg, final=False):
+    print(msg)
+    for line in wrap(msg, 200):
+        post(line)
     status=api.PostUpdates(msg)[-1]
     print(status)
+    if final==True: return
     time.sleep(60)
     replies=[]
     while True:
@@ -36,6 +52,7 @@ def tweet(msg):
         time.sleep(60)
     replies.sort(key=lambda x:x.favorite_count, reverse=True)
     print(replies[0])
+    LAST_TWEETID=replies[0].text
     return replies[0].text
 
 def tweet_numeric(msg, mx):
@@ -44,23 +61,24 @@ def tweet_numeric(msg, mx):
         val = int(val)
     except:
         val = 0
-    if msg > max:
+    if val > max:
         val = 0
-    if msg < 0:
+    if val < 0:
         val = 0
     return val
 
 def select_game():
+    global GAMEID
     with open(YAML_FILE, 'r') as stream:
         data = yaml.safe_load(stream)
 
-    txt="Pick a setting."
+    txt="Let's play #AIDungeon2 together! Pick a setting."
     settings = data["settings"].keys()
     for i, setting in enumerate(settings):
         txt += str(i) + ") " + setting +"\n"
 
     txt+=str(len(settings)) + ") custom"
-    choice = tweet_numeric(txt, len(settings)+1)
+    choice = tweet_numeric(txt+str(GAMEID), len(settings)+1)
 
     if choice == len(settings):
         context = ""
@@ -69,13 +87,13 @@ def select_game():
 
     setting_key = list(settings)[choice]
 
-    txt = "\nPick a character"
+    txt = "\nPick a character: "
     characters = data["settings"][setting_key]["characters"]
     for i, character in enumerate(characters):
-        txt+=str(i) + ") " + character
-    character_key = list(characters)[tweet_numeric(txt, len(characters))]
+        txt+=str(i) + ") " + character + " \n"
+    character_key = list(characters)[tweet_numeric(txt+str(GAMEID), len(characters))]
 
-    name = tweet("\nWhat is your name? ")
+    name = tweet("\nWhat is your name? "+str(GAMEID))
     setting_description = data["settings"][setting_key]["description"]
     character = data["settings"][setting_key]["characters"][character_key]
 
@@ -105,13 +123,12 @@ def play_aidungeon_2():
 
         print("\n\n")
         context, prompt = select_game()
-        tweet(instructions())
         print("\nGenerating story...")
 
         story_manager.start_new_story(prompt, context=context, upload_story=upload_story)
 
         print("\n")
-        console_print(str(story_manager.story))
+        output=str(story_manager.story)
         while True:
             action = tweet(output)
             if action == "":
@@ -145,15 +162,17 @@ def play_aidungeon_2():
                     output="Woops that action caused the model to start looping. Try a different action to prevent that."
                     continue
 
-            if player_won(result):
-                tweet(result + "\n CONGRATS YOU WIN")
+            if player_won(output):
+                tweet(output + "\n CONGRATS YOU WIN", final=True)
                 break
-            elif player_died(result):
-                tweet(result + "\n YOU DIED. GAME OVER.")
+            elif player_died(output):
+                tweet(output + "\n YOU DIED. GAME OVER.", final=True)
                 break
 
 
 
 
 if __name__ == '__main__':
-    play_aidungeon_2()
+    while True:
+        GAMEID+=1
+        play_aidungeon_2()
