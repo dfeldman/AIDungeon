@@ -6,5 +6,4 @@ pyyaml
 tensorflow==1.15
 pyyaml
 tensorflow-gpu==1.15
-twitter
-
+python-twitter
