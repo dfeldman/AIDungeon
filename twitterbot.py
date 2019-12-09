@@ -20,6 +20,7 @@ consumer_key=os.environ["consumer_key"]
 consumer_secret=os.environ["consumer_secret"]
 access_token_key=os.environ["access_token_key"]
 access_token_secret=os.environ["access_token_secret"]
+user=os.environ["user"]
 
 api = twitter.Api(consumer_key=consumer_key, consumer_secret=consumer_secret, access_token_key=access_token_key, access_token_secret=access_token_secret)
 
@@ -47,7 +48,7 @@ def tweet(msg, final=False):
     time.sleep(60)
     replies=[]
     while True:
-        all_replies = api.GetReplies()
+        all_replies = api.GetSearch(term="to:"+user)
         replies = [x for x in all_replies if x.in_reply_to_status_id==status.id]
         if len(replies) > 0: 
             break
@@ -56,7 +57,7 @@ def tweet(msg, final=False):
     replies.sort(key=lambda x:x.favorite_count, reverse=True)
     print(replies[0])
     LAST_TWEETID=replies[0].id
-    return replies[0].id
+    return replies[0].text
 
 def tweet_numeric(msg, mx):
     val = tweet(msg)
