@@ -37,6 +37,7 @@ def post(msg):
 def tweet(msg, final=False):
     print(msg)
     for line in wrap(msg, 270):
+        print("line",line,len(line))
         post(line)
     status=api.PostUpdates(msg)[-1]
     print(status)
@@ -53,7 +54,7 @@ def tweet(msg, final=False):
     replies.sort(key=lambda x:x.favorite_count, reverse=True)
     print(replies[0])
     LAST_TWEETID=replies[0].text
-    return replies[0].text
+    return replies[0].id
 
 def tweet_numeric(msg, mx):
     val = tweet(msg)
