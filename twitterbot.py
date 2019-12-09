@@ -73,7 +73,7 @@ def tweet(msg, final=False):
 def tweet_numeric(msg, mx):
     val = tweet(msg)
     try:
-        val = int(val[0])
+        val = int(val.strip()[0])
     except:
         val = 0
     if val > mx:
@@ -145,7 +145,7 @@ def play_aidungeon_2():
         print("\n")
         output=str(story_manager.story)
         while True:
-            action = tweet(output)
+            action = tweet(output+" [reply here...]")
             if action == "":
                 action = ""
                 result = story_manager.act(action)
@@ -191,9 +191,9 @@ if __name__ == '__main__':
     while True:
         GAMEID+=1
         try:
-            play_aidungeon_2()
             LAST_TWEETID=0
             LAST_TWEETER=""
+            play_aidungeon_2()
         except Exception as e:
             print(e)
             continue
