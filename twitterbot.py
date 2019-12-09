@@ -38,7 +38,7 @@ def tweet(msg):
     print(replies[0])
     return replies[0].text
 
-def tweet_numeric(msg, max):
+def tweet_numeric(msg, mx):
     val = tweet(msg)
     try:
         val = int(val)
@@ -57,9 +57,7 @@ def select_game():
     txt="Pick a setting."
     settings = data["settings"].keys()
     for i, setting in enumerate(settings):
-        txt += str(i) + ") " + setting
-        if setting == "fantasy":
-            txt += " (recommended)"
+        txt += str(i) + ") " + setting +"\n"
 
     txt+=str(len(settings)) + ") custom"
     choice = tweet_numeric(txt, len(settings)+1)
@@ -74,7 +72,7 @@ def select_game():
     txt = "\nPick a character"
     characters = data["settings"][setting_key]["characters"]
     for i, character in enumerate(characters):
-        txt+=str(i) + ") " + character)
+        txt+=str(i) + ") " + character
     character_key = list(characters)[tweet_numeric(txt, len(characters))]
 
     name = tweet("\nWhat is your name? ")
@@ -144,7 +142,7 @@ def play_aidungeon_2():
                 if similarity > 0.9:
                     story_manager.story.actions = story_manager.story.actions[:-1]
                     story_manager.story.results = story_manager.story.results[:-1]
-                    output="Woops that action caused the model to start looping. Try a different action to prevent that.")
+                    output="Woops that action caused the model to start looping. Try a different action to prevent that."
                     continue
 
             if player_won(result):
