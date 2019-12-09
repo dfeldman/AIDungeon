@@ -180,6 +180,6 @@ if __name__ == '__main__':
         GAMEID+=1
         try:
             play_aidungeon_2()
-        except e:
+        except Exception as e:
             print(e)
             continue
