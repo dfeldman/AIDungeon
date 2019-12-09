@@ -66,7 +66,7 @@ def tweet(msg, final=False):
     txt = replies[0].text
     if txt.startswith("@d_feldman"):
         txt=txt[len("@d_feldman"):]
-    " ".join([a for a in txt.split(" ") if a[0] != "@"])
+    " ".join([a for a in txt.split(" ") if len(a)>0 and a[0] != "@"])
     if txt.startswith(" (human reply)"):
         txt=txt[len(" (human reply)"):]
     return txt
