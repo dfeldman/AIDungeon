@@ -36,7 +36,7 @@ def post(msg):
 
 def tweet(msg, final=False):
     print(msg)
-    for line in wrap(msg, 200):
+    for line in wrap(msg, 270):
         post(line)
     status=api.PostUpdates(msg)[-1]
     print(status)
@@ -61,7 +61,7 @@ def tweet_numeric(msg, mx):
         val = int(val)
     except:
         val = 0
-    if val > max:
+    if val > mx:
         val = 0
     if val < 0:
         val = 0
@@ -72,7 +72,7 @@ def select_game():
     with open(YAML_FILE, 'r') as stream:
         data = yaml.safe_load(stream)
 
-    txt="Let's play #AIDungeon2 together! Pick a setting."
+    txt="NEW GAME of #AIDungeon2 %s ! Pick a setting." % GAMEID
     settings = data["settings"].keys()
     for i, setting in enumerate(settings):
         txt += str(i) + ") " + setting +"\n"
@@ -175,4 +175,7 @@ def play_aidungeon_2():
 if __name__ == '__main__':
     while True:
         GAMEID+=1
-        play_aidungeon_2()
+        try:
+            play_aidungeon_2()
+        except:
+            continue
