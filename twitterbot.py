@@ -55,7 +55,7 @@ def tweet(msg, final=False):
         time.sleep(60)
     replies.sort(key=lambda x:x.favorite_count, reverse=True)
     print(replies[0])
-    LAST_TWEETID=replies[0].text
+    LAST_TWEETID=replies[0].id
     return replies[0].id
 
 def tweet_numeric(msg, mx):
