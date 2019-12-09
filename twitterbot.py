@@ -26,6 +26,8 @@ api = twitter.Api(consumer_key=consumer_key, consumer_secret=consumer_secret, ac
 
 
 LAST_TWEETID=0
+LAST_TWEETER=""
+
 GAMEID=random.randint(0,10000)
 def post(msg):
     global LAST_TWEETID
@@ -38,14 +40,17 @@ def post(msg):
 
 def tweet(msg, final=False):
     global LAST_TWEETID
+    global LAST_TWEETER
     print(msg)
     status = None
+    if LAST_TWEETER != "" and LAST_TWEETER !="d_feldman":
+        msg = "@" + LAST_TWEETER + " " + msg
     for line in wrap(msg, 270):
         print("line",line,len(line))
         status=post(line)
     print(status)
     if final==True: return
-    time.sleep(60)
+    time.sleep(15)
     replies=[]
     while True:
         all_replies = api.GetSearch(term="to:"+user)
@@ -53,11 +58,15 @@ def tweet(msg, final=False):
         if len(replies) > 0: 
             break
         print("Waiting")
-        time.sleep(60)
+        time.sleep(15)
     replies.sort(key=lambda x:x.favorite_count, reverse=True)
     print(replies[0])
     LAST_TWEETID=replies[0].id
-    return replies[0].text
+    LAST_TWEETER=replies[0].user.screen_name
+    txt = replies[0].text
+    if txt.startswith("(human reply)"):
+        txt=txt[len("(human reply)"):]
+    return txt
 
 def tweet_numeric(msg, mx):
     val = tweet(msg)
@@ -76,13 +85,13 @@ def select_game():
     with open(YAML_FILE, 'r') as stream:
         data = yaml.safe_load(stream)
 
-    txt="NEW GAME of #AIDungeon2 %s ! Pick a setting." % GAMEID
+    txt="NEW GAME of #AIDungeon2 %s ! Reply to this thread to play the game. Pick a setting." % GAMEID
     settings = data["settings"].keys()
     for i, setting in enumerate(settings):
         txt += str(i) + ") " + setting +"\n"
 
     txt+=str(len(settings)) + ") custom"
-    choice = tweet_numeric(txt+str(GAMEID), len(settings)+1)
+    choice = tweet_numeric(txt+" "+str(GAMEID), len(settings)+1)
 
     if choice == len(settings):
         context = ""
@@ -181,6 +190,8 @@ if __name__ == '__main__':
         GAMEID+=1
         try:
             play_aidungeon_2()
+            LAST_TWEETID=0
+            LAST_TWEETER=""
         except Exception as e:
             print(e)
             continue
