@@ -64,8 +64,10 @@ def tweet(msg, final=False):
     LAST_TWEETID=replies[0].id
     LAST_TWEETER=replies[0].user.screen_name
     txt = replies[0].text
-    if txt.startswith("(human reply)"):
-        txt=txt[len("(human reply)"):]
+    if txt.startswith("@d_feldman"):
+        txt=txt[len("@d_feldman"):]
+    if txt.startswith(" (human reply)"):
+        txt=txt[len(" (human reply)"):]
     return txt
 
 def tweet_numeric(msg, mx):
