@@ -44,7 +44,7 @@ def tweet(msg, final=False):
     print(msg)
     status = None
     if LAST_TWEETER != "" and LAST_TWEETER !="d_feldman":
-        msg = "@" + LAST_TWEETER + " " + msg
+        msg = "@" + str(LAST_TWEETER) + " " + msg
     for line in wrap(msg, 270):
         print("line",line,len(line))
         status=post(line)
@@ -71,7 +71,7 @@ def tweet(msg, final=False):
 def tweet_numeric(msg, mx):
     val = tweet(msg)
     try:
-        val = int(val)
+        val = int(val[0])
     except:
         val = 0
     if val > mx:
@@ -85,13 +85,13 @@ def select_game():
     with open(YAML_FILE, 'r') as stream:
         data = yaml.safe_load(stream)
 
-    txt="NEW GAME of #AIDungeon2 %s ! Reply to this thread to play the game. Pick a setting." % GAMEID
+    txt="NEW GAME of #AIDungeon2 %s ! Reply to this thread to play the game. HAVE FUN!!! Start by picking a setting." % GAMEID
     settings = data["settings"].keys()
     for i, setting in enumerate(settings):
         txt += str(i) + ") " + setting +"\n"
 
     txt+=str(len(settings)) + ") custom"
-    choice = tweet_numeric(txt+" "+str(GAMEID), len(settings)+1)
+    choice = tweet_numeric(txt, len(settings)+1)
 
     if choice == len(settings):
         context = ""
