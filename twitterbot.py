@@ -164,10 +164,10 @@ def play_aidungeon_2():
                     continue
 
             if player_won(output):
-                tweet(output + "\n CONGRATS YOU WIN", final=True)
+                tweet(output + "\n CONGRATS YOU WIN. Retweet if you had fun!", final=True)
                 break
             elif player_died(output):
-                tweet(output + "\n YOU DIED. GAME OVER.", final=True)
+                tweet(output + "\n YOU DIED. GAME OVER. Retweet if you had fun!", final=True)
                 break
 
 
