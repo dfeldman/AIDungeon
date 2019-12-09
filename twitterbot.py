@@ -27,6 +27,7 @@ api = twitter.Api(consumer_key=consumer_key, consumer_secret=consumer_secret, ac
 LAST_TWEETID=0
 GAMEID=random.randint(0,10000)
 def post(msg):
+    global LAST_TWEETID
     if LAST_TWEETID==0:
         status = api.PostUpdate(msg)
     else:
@@ -35,11 +36,12 @@ def post(msg):
     return status
 
 def tweet(msg, final=False):
+    global LAST_TWEETID
     print(msg)
+    status = None
     for line in wrap(msg, 270):
         print("line",line,len(line))
-        post(line)
-    status=api.PostUpdates(msg)[-1]
+        status=post(line)
     print(status)
     if final==True: return
     time.sleep(60)
@@ -178,5 +180,6 @@ if __name__ == '__main__':
         GAMEID+=1
         try:
             play_aidungeon_2()
-        except:
+        except e:
+            print(e)
             continue
